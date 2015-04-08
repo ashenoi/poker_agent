@@ -70,16 +70,16 @@ function oppo = UpdateOpponent(history,i)
         game_number = size(history.showdown,1);
         number_players = size(history.money,2);
 
-        %Style1 (If the player folded during the game then this variable is 1, else it is 0
-        %Basically a value of 1 is a tight player and a value of 0 is a loose player)
-        style1_value = 0;
+        %Style1 (If the player folded during the game then this variable is             2, else it is 1
+        %Basically a value of 2 is a tight player and a value of 1 is a loose player)
+        style1_value = 1;
         for i=1:1:4
             if(history.bet(history.stage_starts(i), current_player) == 3)
-                style1_value = 1;
+                style1_value = 2;
             end
         end
 
-        %Style2 (If the ratio of raises to calls is greater than 1 then this is 1, else it is 0.
+        %Style2 (If the ratio of raises to calls is greater than 1 then this is 2, else it is 1.
         %Basically a value of 1 is a passive player and a value of 2 is an aggressive player)
         type_bet = [0,0];
         for i=1:1:4
@@ -90,16 +90,16 @@ function oppo = UpdateOpponent(history,i)
             end
         end
         if(type_bet(1) > type_bet(2))
-            style2_value = 1;
+            style2_value = 2;
         else
-            style2_value = 0;
+            style2_value = 1;
         end
 
-        %Position (A value of 1 is a late position while a value of 0 is an early position)
+        %Position (A value of 2 is a late position while a value of 1 is an early position)
         if(history.pos(game_number)>(number_players/3))
-            position_value = 1;
+            position_value = 2;
         else
-            position_value = 0;
+            position_value = 1;
         end
 
         %Bet (The bet places during every round of the game until the player folded)
@@ -113,16 +113,16 @@ function oppo = UpdateOpponent(history,i)
         %FH (If game goes to showdown and the players cards are known, its final type is found and stored)
         card_values = [history.hole(game_number, 2*current_player),history.hole(game_number, 2*current_player -1)];
         if(card_values(1,1) ~= -1)
-            FH_value = {final_type([card_values history.board(game_number,:)])};
+            FH_value = {final_type([card_values history.board(game_number,:)]) + 1};
         else
             FH_value = {[]};
         end
          
-        %Bluff (At showdown, if player had a poor final hand type then bluff is 1 else bluff is zero )
-        bluff_value = 0;
+        %Bluff (At showdown, if player had a poor final hand type then bluff is 2 else bluff is 1)
+        bluff_value = 1;
         if(card_values(1,1) ~= -1)
             if(cell2mat(FH_value) < 4)
-                bluff_value = 1;
+                bluff_value = 2;
             end  
         end
 
@@ -141,8 +141,6 @@ function oppo = UpdateOpponent(history,i)
         disp(total_data(:,:,current_player));
         engine = jtree_inf_engine(bnet);
         max_iter = 10;
-        disp('VERY VERY VERY IMPORTANT!!!')
-        disp(size(total_data(:,:,current_player)));
         [bnet_trained, LLtrace] = learn_params_em(engine, total_data(:,:,current_player), max_iter);
     end
 end
