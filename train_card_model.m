@@ -1,5 +1,24 @@
 clear all;
 
+global suited;
+global unsuited;
+    suited=[];
+    for i=1:13
+        for j=i+1:13
+            suited = [ suited ; i*13+j];
+        end
+    end
+    unsuited=[];
+    for i=1:13
+        for j=1:13
+            if i ~= j
+                card = sort([ i ,  j]);
+                unsuited = [ unsuited ; card(1)*13+card(2)];
+                unsuited=unique(unsuited);
+            end
+        end
+    end
+
 % create Bayes graph structure
 N = 7; 
 dag = zeros(N,N);
@@ -10,7 +29,7 @@ dag([CH, SG], FH) = 1;
 
 % create structure of each node
 discrete_nodes = 1:N;
-node_sizes = [1326 3 52 52 9 3 9 ];
+node_sizes = [169 3 52 52 9 3 9 ];
 bnet = mk_bnet(dag, node_sizes, 'discrete', discrete_nodes, 'names', node_names);
 seed = 0;
 rand('state',seed);
@@ -23,17 +42,10 @@ bnet.CPD{CH} = tabular_CPD(bnet, CH);
 bnet.CPD{SG} = tabular_CPD(bnet, SG);
 bnet.CPD{FH} = tabular_CPD(bnet, FH);
 
-nsamples = 1000*3;
+nsamples = 10000*3;
 samples = cell(N,nsamples);
 cards = [0:51];
 
-M=[];
-for i=0:50
-    for j=i+1:51
-        M = [M,i*52+(j)];
-    end
-end
-M=unique(M);
 
 
 for i=1:3:nsamples
@@ -51,7 +63,7 @@ for i=1:3:nsamples
         index = i+(SG_val-1);
         CH_val = final_type(card_sample(1:5+(SG_val-1)))+1;
         hole_cards = sort(card_sample(1:2));
-        samples(Hole,index)={[find(M==(hole_cards(1)*52+(hole_cards(2))))]};
+        samples(Hole,index)={[hole_card_type(hole_cards)]};
         samples(CH,index)={[CH_val]};
         samples(Flop,index)={[Flop_val]};
         if SG_val>=2
@@ -70,7 +82,7 @@ for i=1:3:nsamples
         samples(FH,index)={[FH_val]};
 	end
 end
-
+disp('starting training')
 engine = jtree_inf_engine(bnet);
 max_iter = 10;
 [bnet_trained, LLtrace] = learn_params_em(engine, samples, max_iter);

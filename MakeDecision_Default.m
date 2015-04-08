@@ -110,7 +110,7 @@ function decision = MakeDecisionPostFlop(info)
 	%% fill in missing code here for Part I
 	win_prob = PredictWin(info);
     
-    
+    info.su_info
     %% fill in missing code here for Part II
     %{
     Computes the bet amount that needs to be paid while checking. It also
