@@ -16,7 +16,7 @@ function oppo = UpdateOpponent(history,i)
     oppo = [];
     %% ----- FILL IN THE MISSING CODE ----- %%
     global total_data;
-    total_data = cell(6,1,10);
+    
     
     disp('THIS IS THE HISTORY MATRIX');
     %{
@@ -144,5 +144,6 @@ function oppo = UpdateOpponent(history,i)
         disp('VERY VERY VERY IMPORTANT!!!')
         disp(size(total_data(:,:,current_player)));
         [bnet_trained, LLtrace] = learn_params_em(engine, total_data(:,:,current_player), max_iter);
+        oppo = [oppo;bnet_trained];
     end
 end
