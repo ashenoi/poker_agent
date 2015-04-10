@@ -21,7 +21,7 @@ function oppo_dis = PredictHoleCards(info)
     oppo_dis = [];
     old_oppo_dis = info.su_info;
     %% ----- FILL IN THE MISSING CODE ----- %%
-    if info.stage == 0
+    if info.stage == 0 || isempty(info.stage_bet)
         oppo_dis = zeros(info.num_oppo,169);
         return
     end
@@ -37,6 +37,10 @@ function oppo_dis = PredictHoleCards(info)
         else
             oppo_index = oppo_index+1;
         end
+        if oppo_index > info.num_oppo+1
+            oppo_index = oppo_index - info.num_oppo -1;
+        end
+        
         if info.stage_bet(oppo_index) ~= 0
             
             [combined_bnet,Bet] = combine_bnet(bnet_model_card,oppo_model(i));
