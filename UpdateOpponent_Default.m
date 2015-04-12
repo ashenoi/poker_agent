@@ -17,9 +17,8 @@ function oppo = UpdateOpponent(history,i)
     %% ----- FILL IN THE MISSING CODE ----- %%
     global total_data;
     
-    
-    disp('THIS IS THE HISTORY MATRIX');
     %{
+    disp('THIS IS THE HISTORY MATRIX');
     disp(history.showdown);
     disp(history.board);
     disp(history.hole);
@@ -30,7 +29,6 @@ function oppo = UpdateOpponent(history,i)
     disp(history.row_index);
     disp(history.bet);
     %}
-    %Initial values
     for val=1:1:10
         if (val==i)
             continue;
@@ -128,20 +126,29 @@ function oppo = UpdateOpponent(history,i)
 
         %New training data after this game
         for i=1:1:size(bet_values,2)
-            new_data = [FH_value; bet_values(i); style1_value; style2_value; bluff_value; position_value];
-            if(size(total_data(:,:,current_player),2)==1)
-                total_data(:,1,current_player) = new_data;
+            new_data = [FH_value; bet_values(i); style1_value; style2_value; bluff_value; position_value;current_player];
+            if(isequal(total_data(7,1),{[]}))
+                total_data(:,1) = new_data;
             else
-                total_data(:,:,current_player) = [total_data(:,:,current_player),new_data];
+                total_data = [total_data, new_data];
             end
-            
+        end
+        
+        %Obtaining current player data
+        current_data = cell(6,1);
+        for i=1:1:size(total_data,2)
+            if(isequal(total_data(7,i), {current_player}))
+                current_data = [current_data,total_data(1:6,i)];
+            end
         end
         
         %Training the Bayes Network
-        disp(total_data(:,:,current_player));
         engine = jtree_inf_engine(bnet);
         max_iter = 10;
-        [bnet_trained, LLtrace] = learn_params_em(engine, total_data(:,:,current_player), max_iter);
+        [bnet_trained, LLtrace] = learn_params_em(engine, current_data, max_iter);
         oppo = [oppo;bnet_trained];
+        CPT_values = CPT_from_bnet(bnet_trained);
+        FH_CPT = CPT_values{1,1};
+        disp(FH_CPT);
     end
 end
