@@ -110,7 +110,9 @@ function decision = MakeDecisionPostFlop(info)
 	%% fill in missing code here for Part I
 	win_prob = PredictWin(info);
     
-    info.su_info
+    disp('THIS IS VERY VERY VERY VERY IMPORTANT')
+    disp(info.su_info)
+    
     %% fill in missing code here for Part II
     %{
     Computes the bet amount that needs to be paid while checking. It also
@@ -175,6 +177,67 @@ the probability of us winning a particular game at every stage of the game.
 %}
 % Compute probability of winning vs N opponents
 function win_prob = PredictWin(info)
+
+    win_prob = 0.0;
+    Num_trials = 10000;
+    
+    hole_card = info.hole_card;
+    board_card = info.board_card;
+    cards = [0:51];
+    cards = setdiff(cards,[hole_card,board_card]);
+    opponent_cards = [];
+    board_card_rest = zeros(1,sum(board_card == -1));
+    board_card = board_card(board_card ~= -1);
+    
+    k = size(opponent_cards,2)+size(board_card_rest,2);
+    win_count = 0;
+    for i=1:Num_trials
+        
+        for num=1:1:info.num_oppo
+            opponent_dist = info.su_info(num,:);
+            types = zeros(10000,1);
+            value = 1;
+            count = 0;
+            for j=1:1:10000
+                if(count < (10000*opponent_dist(value)))
+                    types(j) = value;
+                    count = count + 1;
+                else
+                    count = 0;
+                    value = value + 1;
+                end
+            end
+            category = datasample(types,1);
+            hole_cards = datasample(cards,2,'Replace',false);
+            while(hole_card_type(hole_cards)~=category)
+               hole_cards = datasample(cards,2,'Replace',false); 
+            end
+            opponent_cards = [opponent_cards, hole_cards];
+        end
+        cards = setdiff(cards,opponent_cards);
+        board_card_rest = datasample(cards,size(board_card_rest,2),'Replace',false);
+        
+        [my_type,my_highcard] = final_type([hole_card, board_card, board_card_rest]);
+        my_highcard = max(my_highcard);
+        loss = 0;
+        for j=1:info.num_oppo
+            if info.active(j+1) == 1
+                [op_type,op_highcard] = final_type([opponent_cards(2*j-1:2*j),board_card,board_card_rest]);
+                op_highcard = max(op_highcard);
+                if( (op_type > my_type )|| (op_type == my_type && op_highcard > my_highcard))
+                    loss=1;
+                    break;
+                end
+            end
+        end
+        if loss ~= 1
+            win_count = win_count + 1;
+        end
+        
+    end
+    win_prob = (win_count/Num_trials)
+    
+    %{
     win_prob = 0.0;
     Num_trials = 10000;
     hole_card = info.hole_card;
@@ -186,6 +249,7 @@ function win_prob = PredictWin(info)
     board_card = board_card(board_card ~= -1);
     k = size(opponent_cards,2)+size(board_card_rest,2);
     win_count = 0;
+    
     for i=1:Num_trials
         sample_card = datasample(cards,k,'Replace',false);
         opponent_cards = sample_card(1:info.num_oppo*2);
@@ -209,6 +273,7 @@ function win_prob = PredictWin(info)
         
     end
     win_prob = (win_count/Num_trials)
+    %}
 end
 
 %The function computes the final category of our hand as well as our high card 
@@ -247,5 +312,3 @@ function [type,highcard] = final_card_type(v)
         highcard = max(high_cf);
     end
 end
-
-
