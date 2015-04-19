@@ -23,4 +23,4 @@ global unsuited;
         end
     end
 global total_data;
-total_data = cell(7,1,10);
+total_data = cell(7,1);
