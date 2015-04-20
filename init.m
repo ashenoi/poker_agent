@@ -38,6 +38,7 @@ hole_card_default = F/10000;
 
 
 global hole_card_lookup;
+global hole_card_lookup_flat;
 hole_card_lookup=cell(1,169);
 card_list = [];
 count = 0;
@@ -58,4 +59,10 @@ for i=0:51
             hole_card_lookup{1,type} = [prev_cards,hole_card'];
         end
     end
+end
+
+hole_card_lookup_flat = [];
+for i=1:169
+    cards= hole_card_lookup{1,i};
+    hole_card_lookup_flat=[hole_card_lookup_flat, cards];
 end

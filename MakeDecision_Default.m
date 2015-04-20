@@ -178,13 +178,17 @@ the probability of us winning a particular game at every stage of the game.
 %}
 % Compute probability of winning vs N opponents
 function win_prob = PredictWin(info)
-    global hole_card_lookup;
+    global hole_card_lookup_flat;
     win_prob = 0.0;
     Num_trials = 10000;
     
     hole_card = info.hole_card;
     board_card = info.board_card;
     win_count = 0;
+    opponent_dist_all = [];
+    for num=1:1:info.num_oppo   
+        opponent_dist_all = [ opponent_dist_all ; convert_to_hole(info.su_info(num,:))];
+    end
     for i=1:Num_trials
         cards = [0:51];
         cards = setdiff(cards,[hole_card,board_card]);
@@ -195,12 +199,12 @@ function win_prob = PredictWin(info)
         k = size(opponent_cards,2)+size(board_card_rest,2);  
          
         for num=1:1:info.num_oppo
-            opponent_dist = info.su_info(num,:);
-            category = datasample([1:169],1,'Weights',opponent_dist);
-            card_sample = hole_card_lookup{1,category};
-            hole_cards = datasample(card_sample',1,'Replace',false);
-          
-            
+            opponent_dist = opponent_dist_all(num,:);
+            card_sample = hole_card_lookup_flat;
+            if sum(card_sample) == 0
+                disp('Error')
+            end
+            hole_cards = datasample(card_sample',1,'Replace',false,'Weights',opponent_dist);
             opponent_cards(1,num*2 -1:num*2) = hole_cards;
         end
         cards = setdiff(cards,opponent_cards);
