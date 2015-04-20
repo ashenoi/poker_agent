@@ -35,3 +35,27 @@ for i=1:10000
 	F(f) = F(f)+1;
 end
 hole_card_default = F/10000;
+
+
+global hole_card_lookup;
+hole_card_lookup=cell(1,169);
+card_list = [];
+count = 0;
+for i=0:51
+    for j=i+1:51
+        hole_card = [i,j];
+        card_found = 0;
+        for k=1:length(card_list);
+            if card_list(k,1) == i && card_list(k,2) == j
+                card_found = 1;
+                break;
+            end
+        end
+        if card_found == 0
+            count = count+1;
+            type = hole_card_type(hole_card);
+            prev_cards= hole_card_lookup{1,type};
+            hole_card_lookup{1,type} = [prev_cards,hole_card'];
+        end
+    end
+end

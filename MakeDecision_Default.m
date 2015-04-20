@@ -108,10 +108,11 @@ end
 function decision = MakeDecisionPostFlop(info)
     display('MakeDecisionPostFlop')
 	%% fill in missing code here for Part I
+    tic
 	win_prob = PredictWin(info);
-    
+    disp('Time for winprob')
+    t=toc
     disp('THIS IS VERY VERY VERY VERY IMPORTANT')
-    disp(info.su_info)
     
     %% fill in missing code here for Part II
     %{
@@ -177,7 +178,7 @@ the probability of us winning a particular game at every stage of the game.
 %}
 % Compute probability of winning vs N opponents
 function win_prob = PredictWin(info)
-
+    global hole_card_lookup;
     win_prob = 0.0;
     Num_trials = 10000;
     
@@ -190,20 +191,21 @@ function win_prob = PredictWin(info)
 
         board_card_rest = zeros(1,sum(board_card == -1));
         board_card = board_card(board_card ~= -1);
-        opponent_cards = []; 
+        opponent_cards = zeros(1,info.num_oppo*2); 
         k = size(opponent_cards,2)+size(board_card_rest,2);  
+         
         for num=1:1:info.num_oppo
             opponent_dist = info.su_info(num,:);
             category = datasample([1:169],1,'Weights',opponent_dist);
-            hole_cards = datasample(cards,2,'Replace',false);
-            while(hole_card_type(hole_cards)~=category)
-               hole_cards = datasample(cards,2,'Replace',false); 
-            end
-            opponent_cards = [opponent_cards, hole_cards];
+            card_sample = hole_card_lookup{1,category};
+            hole_cards = datasample(card_sample',1,'Replace',false);
+          
+            
+            opponent_cards(1,num*2 -1:num*2) = hole_cards;
         end
         cards = setdiff(cards,opponent_cards);
         board_card_rest = datasample(cards,size(board_card_rest,2),'Replace',false);
-        
+
         [my_type,my_highcard] = final_type([hole_card, board_card, board_card_rest]);
         my_highcard = max(my_highcard);
         loss = 0;
@@ -220,6 +222,7 @@ function win_prob = PredictWin(info)
         if loss ~= 1
             win_count = win_count + 1;
         end
+
         
     end
     win_prob = (win_count/Num_trials)
