@@ -186,9 +186,21 @@ function win_prob = PredictWin(info)
     board_card = info.board_card;
     win_count = 0;
     opponent_dist_all = [];
+ 
+    
     for num=1:1:info.num_oppo   
         opponent_dist_all = [ opponent_dist_all ; convert_to_hole(info.su_info(num,:))];
     end
+    hole_cards_array = cell(1,info.num_oppo);
+    for num=1:1:info.num_oppo
+        opponent_dist = opponent_dist_all(num,:);
+        card_sample = hole_card_lookup_flat;
+        if sum(card_sample) == 0
+            disp('Error')
+        end
+        hole_cards_array{1,num} =  datasample(card_sample',Num_trials,'Replace',true,'Weights',opponent_dist);
+        
+    end    
     for i=1:Num_trials
         cards = [0:51];
         cards = setdiff(cards,[hole_card,board_card]);
@@ -196,17 +208,11 @@ function win_prob = PredictWin(info)
         board_card_rest = zeros(1,sum(board_card == -1));
         board_card = board_card(board_card ~= -1);
         opponent_cards = zeros(1,info.num_oppo*2); 
-        k = size(opponent_cards,2)+size(board_card_rest,2);  
-         
-        for num=1:1:info.num_oppo
-            opponent_dist = opponent_dist_all(num,:);
-            card_sample = hole_card_lookup_flat;
-            if sum(card_sample) == 0
-                disp('Error')
-            end
-            hole_cards = datasample(card_sample',1,'Replace',false,'Weights',opponent_dist);
-            opponent_cards(1,num*2 -1:num*2) = hole_cards;
+        k = size(opponent_cards,2)+size(board_card_rest,2);
+        for num=1:info.num_oppo
+            opponent_cards(1,num*2 -1:num*2) = hole_cards_array{1,num}(i); 
         end
+
         cards = setdiff(cards,opponent_cards);
         board_card_rest = datasample(cards,size(board_card_rest,2),'Replace',false);
 
