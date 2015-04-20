@@ -149,5 +149,6 @@ function oppo = UpdateOpponent(history,i)
         oppo = [oppo;bnet_trained];
         CPT_values = CPT_from_bnet(bnet_trained);
         FH_CPT = CPT_values{1,1};
+        
     end
 end

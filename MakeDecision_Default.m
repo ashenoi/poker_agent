@@ -109,7 +109,7 @@ function decision = MakeDecisionPostFlop(info)
     display('MakeDecisionPostFlop')
 	%% fill in missing code here for Part I
     tic
-	win_prob = PredictWin(info);
+	win_prob = PredictWin1(info);
     disp('Time for winprob')
     t=toc
     disp('THIS IS VERY VERY VERY VERY IMPORTANT')
@@ -236,8 +236,10 @@ function win_prob = PredictWin(info)
         
     end
     win_prob = (win_count/Num_trials)
-    
-    %{
+end
+
+function win_prob = PredictWin1(info)
+   
     win_prob = 0.0;
     Num_trials = 10000;
     hole_card = info.hole_card;
@@ -273,7 +275,7 @@ function win_prob = PredictWin(info)
         
     end
     win_prob = (win_count/Num_trials)
-    %}
+  
 end
 
 %The function computes the final category of our hand as well as our high card 

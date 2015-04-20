@@ -51,6 +51,20 @@ function oppo_dis = PredictHoleCards(info)
             [engine, loglik] = enter_evidence(engine, evidence);
             m = marginal_nodes(engine,1);
             dis = (m.T)';
+            if info.stage == 1
+                m1 = marginal_nodes(engine,4);
+                dis1= (m1.T)';
+            elseif info.stage == 2
+                m1 = marginal_nodes(engine,3);
+                dis1= (m1.T)';    
+            elseif info.stage == 3
+                m1 = marginal_nodes(engine,2);
+                dis1= (m1.T)';   
+            end
+            disp('Opponent final hand');
+            i
+            dis1
+            
         else
             if isempty(old_oppo_dis)
                 dis = hole_card_default;
