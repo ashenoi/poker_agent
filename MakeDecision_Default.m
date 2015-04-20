@@ -183,31 +183,18 @@ function win_prob = PredictWin(info)
     
     hole_card = info.hole_card;
     board_card = info.board_card;
-    cards = [0:51];
-    cards = setdiff(cards,[hole_card,board_card]);
-    opponent_cards = [];
-    board_card_rest = zeros(1,sum(board_card == -1));
-    board_card = board_card(board_card ~= -1);
-    
-    k = size(opponent_cards,2)+size(board_card_rest,2);
     win_count = 0;
     for i=1:Num_trials
-        
+        cards = [0:51];
+        cards = setdiff(cards,[hole_card,board_card]);
+
+        board_card_rest = zeros(1,sum(board_card == -1));
+        board_card = board_card(board_card ~= -1);
+        opponent_cards = []; 
+        k = size(opponent_cards,2)+size(board_card_rest,2);  
         for num=1:1:info.num_oppo
             opponent_dist = info.su_info(num,:);
-            types = zeros(10000,1);
-            value = 1;
-            count = 0;
-            for j=1:1:10000
-                if(count < (10000*opponent_dist(value)))
-                    types(j) = value;
-                    count = count + 1;
-                else
-                    count = 0;
-                    value = value + 1;
-                end
-            end
-            category = datasample(types,1);
+            category = datasample([1:169],1,'Weights',opponent_dist);
             hole_cards = datasample(cards,2,'Replace',false);
             while(hole_card_type(hole_cards)~=category)
                hole_cards = datasample(cards,2,'Replace',false); 

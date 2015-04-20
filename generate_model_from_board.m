@@ -62,7 +62,7 @@ end
   
         samples(Hole,i)={[hole_card_type(hole_cards-1)]};
         
-        samples(FH,i) = {[final_type(card_sample-1)+1]};
+        samples(FH,i) = {[final_type([card_sample-1,board_card])+1]};
         if cards_to_sample == 4
             samples(Turn,i) = {[card_sample(3)]};
             samples(River,i) = {[card_sample(4)]};

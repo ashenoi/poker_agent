@@ -24,3 +24,14 @@ global unsuited;
     end
 global total_data;
 total_data = cell(7,1);
+
+global hole_card_default;
+cards = [0:51];
+F=zeros(1,169);
+for i=1:10000
+	card_sample=datasample(cards,2,'Replace',false);
+    card_sample = sort(card_sample);
+	f=hole_card_type(card_sample);
+	F(f) = F(f)+1;
+end
+hole_card_default = F/10000;
