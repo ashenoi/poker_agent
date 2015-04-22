@@ -129,36 +129,37 @@ function decision = MakeDecisionPostFlop(info)
     number of active players, bet amount, threshold and the probability of
     win.
     %}
+    SBU=10;
     mustpay = info.cur_pot - info.paid(info.cur_pos);
-    Bt = mustpay;
-    M = info.pot;
+    Bt = mustpay/SBU;
+    M = info.pot/SBU;
     Na = sum(info.active);
-    N = sum(info.active);
+    N = size(info.active,2);
     Pos = info.cur_pos;
     T = 0;
     
     if Pos<(N/3)
-        T = -0.2;
+        T = -0.1;
     else
-        T = 0.2;
+        T = 0.1;
     end
-    if mustpay > 0
-        disp('mustpay >0')
-        if (win_prob > ((Bt+1)/(M+Na+Bt+1))-T)
-            decision = 2;
-            disp('Raise')
-        elseif (win_prob>((Bt/(M+Bt))-T))
-            decision = 1;
-            disp('Check')
-        else
-            decision = 3;
-            disp('Fold')
-        end
+%    if mustpay > 0
+%        disp('mustpay >0')
+    if (win_prob > ((Bt+1)/(M+Na+Bt+1))-T)
+        decision = 2;
+        disp('Raise')
+    elseif (win_prob>((Bt/(M+Bt))-T))
+        decision = 1;
+        disp('Check')
     else
-        decision = 1 ;
-        disp('Mustpay < 0 ')
-        disp('Checking');
+        decision = 3;
+        disp('Fold')
     end
+%     else
+%         decision = 1 ;
+%         disp('Mustpay < 0 ')
+%         disp('Checking');
+%     end
     
     %% The following is just a sample of randomly generating different
     %% decisions. Please comment them after you finish your part.
