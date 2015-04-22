@@ -109,7 +109,11 @@ function decision = MakeDecisionPostFlop(info)
     display('MakeDecisionPostFlop')
 	%% fill in missing code here for Part I
     tic
-	win_prob = PredictWin1(info);
+    if size(info.history.board,1) > 10
+        win_prob = PredictWin(info);
+    else
+        win_prob = PredictWin1(info);
+    end
     disp('Time for winprob')
     t=toc
     disp('THIS IS VERY VERY VERY VERY IMPORTANT')
@@ -129,7 +133,7 @@ function decision = MakeDecisionPostFlop(info)
     Bt = mustpay;
     M = info.pot;
     Na = sum(info.active);
-    N = size(info.active);
+    N = sum(info.active);
     Pos = info.cur_pos;
     T = 0;
     
@@ -139,15 +143,21 @@ function decision = MakeDecisionPostFlop(info)
         T = 0.2;
     end
     if mustpay > 0
+        disp('mustpay >0')
         if (win_prob > ((Bt+1)/(M+Na+Bt+1))-T)
             decision = 2;
+            disp('Raise')
         elseif (win_prob>((Bt/(M+Bt))-T))
             decision = 1;
+            disp('Check')
         else
             decision = 3;
+            disp('Fold')
         end
     else
-        decision = 1 ;       
+        decision = 1 ;
+        disp('Mustpay < 0 ')
+        disp('Checking');
     end
     
     %% The following is just a sample of randomly generating different
