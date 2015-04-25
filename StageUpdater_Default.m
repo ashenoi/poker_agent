@@ -43,11 +43,25 @@ function oppo_dis = PredictHoleCards(info)
         end
         
         if info.stage_bet(oppo_index) ~= 0
-            
+            dec = info.stage_bet(oppo_index);
+        else
+            if info.active(oppo_index) == 0
+                dec = 3;
+            else
+                dec = 4;
+            end
+        end
+        if dec == 4
+            if isempty(old_oppo_dis)
+                dis = hole_card_default;
+            else
+                dis = old_oppo_dis(i,:);
+            end
+        else
             [combined_bnet,Bet] = combine_bnet(bnet_model_card,oppo_model(i));
             engine = jtree_inf_engine(combined_bnet);
             evidence = cell(1,length(combined_bnet.node_sizes));        
-            evidence{Bet} = info.stage_bet(oppo_index);
+            evidence{Bet} = dec;
             [engine, loglik] = enter_evidence(engine, evidence);
             m = marginal_nodes(engine,1);
             dis = (m.T)';
@@ -64,14 +78,9 @@ function oppo_dis = PredictHoleCards(info)
             disp('Opponent final hand');
             i
             dis1
-            
-        else
-            if isempty(old_oppo_dis)
-                dis = hole_card_default;
-            else
-                dis = old_oppo_dis(i,:);
-            end
         end
+        
+    
         oppo_dis = [oppo_dis; dis];
     end
 end
