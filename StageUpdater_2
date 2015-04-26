@@ -82,8 +82,8 @@ function [oppo_dis,bet_values] = PredictHoleCards(info)
         %}
         
         if dec==4
-            if info.su_info(end,oppo_index)~=4
-                dec = info.su_info(end,oppo_index);
+            if info.su_info(end,i)~=4
+                dec = info.su_info(end,i);
             end
         end
         oppo_bet_value = dec;
@@ -116,8 +116,7 @@ function [oppo_dis,bet_values] = PredictHoleCards(info)
             i
             dis1
         end
-        
-        bet_values(oppo_index) = oppo_bet_value;
+        bet_values(i) = oppo_bet_value;
         oppo_dis = [oppo_dis; dis];
     end
 end
