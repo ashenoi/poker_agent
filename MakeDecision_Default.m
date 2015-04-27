@@ -109,7 +109,7 @@ function decision = MakeDecisionPostFlop(info)
     display('MakeDecisionPostFlop')
 	%% fill in missing code here for Part I
     tic
-    if size(info.history.board,1) > 10
+    if size(info.history.board,1) > 30
         win_prob = PredictWin(info);
     else
         win_prob = PredictWin1(info);
@@ -139,7 +139,7 @@ function decision = MakeDecisionPostFlop(info)
     T = 0;
     
     if Pos<(N/3)
-        T = -0.1;
+        T = -0.3;
     else
         T = 0.1;
     end
