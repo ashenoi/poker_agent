@@ -10,9 +10,15 @@ for i=1:length(board_card)
     for j=i+1:length(board_card)
         card_pairs = [ card_pairs ; board_card(i),board_card(j)];
 	B = (hole_card_lookup_flat(1,:) == board_card(i)) + (hole_card_lookup_flat(2,:) == board_card(j));
-	card_pair_index = [card_pair_index ; find(B==2)];
-	hole_board(1,hole_card_type([board_card(i),board_card(j)])) = hole_board(1,hole_card_type([board_card(i),board_card(j)])) +1;
+	card_pair_index = [card_pair_index(:)' , find(B~=0)]';
     end
+end
+
+card_pair_index = unique(card_pair_index);
+for i=1:size(card_pair_index,1)
+    hole_card = hole_card_lookup_flat(:,card_pair_index(i));
+    num = hole_card_type(hole_card);
+    hole_board(1,num) = hole_board(1,num)+1;
 end
 
 card_dist = [];
