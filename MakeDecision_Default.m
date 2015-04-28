@@ -199,17 +199,14 @@ function win_prob = PredictWin(info)
     opponent_dist_all = [];
  
     hole_cards_array = cell(1,info.num_oppo);
-    for trial_num=1:Num_trials
-	oppo_card = []    ;
-        for num=1:1:info.num_oppo   
-            opponent_dist = convert_to_hole(info.su_info(num,:),[board_card,oppo_card(:)']);
-            card_sample = hole_card_lookup_flat;
-	    sample = datasample(card_sample',1,'Weights',opponent_dist);
-	    prev_card = hole_cards_array{1,num};
-	    hole_cards_array{1,num} = [prev_card , sample];
-	    oppo_card = [ oppo_card , sample'];
-        end
+    card_sample = hole_card_lookup_flat;
+    oppo_card = []    ;
+    for num=1:1:info.num_oppo   
+        opponent_dist = convert_to_hole(info.su_info(num,:),[board_card]);
+
+        hole_cards_array{1,num} = datasample(card_sample',Num_trials,'Weights',opponent_dist);              
     end
+   
     %for num=1:1:info.num_oppo
     %    opponent_dist = opponent_dist_all(num,:);
     %    if sum(card_sample) == 0
